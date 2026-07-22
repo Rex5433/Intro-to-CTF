@@ -1,0 +1,905 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Cyber Quest: First-Timer CTF</title>
+  <style>
+    :root {
+      --bg: #07111f;
+      --panel: #0d1b2d;
+      --panel-2: #10243b;
+      --text: #ecf7ff;
+      --muted: #9ab0c6;
+      --cyan: #45e6ff;
+      --green: #72f2a6;
+      --yellow: #ffd76a;
+      --pink: #ff7ac8;
+      --danger: #ff7a7a;
+      --border: rgba(112, 219, 255, 0.22);
+      --shadow: 0 18px 55px rgba(0, 0, 0, 0.35);
+    }
+
+    * { box-sizing: border-box; }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      color: var(--text);
+      background:
+        radial-gradient(circle at 20% 0%, rgba(69, 230, 255, 0.15), transparent 28rem),
+        radial-gradient(circle at 95% 10%, rgba(255, 122, 200, 0.10), transparent 25rem),
+        linear-gradient(180deg, #06101d 0%, #091626 55%, #07111f 100%);
+    }
+
+    button, input, select { font: inherit; }
+
+    button {
+      border: 0;
+      cursor: pointer;
+    }
+
+    .page-shell {
+      width: min(1120px, calc(100% - 32px));
+      margin: 0 auto;
+      padding: 32px 0 64px;
+    }
+
+    .hero {
+      position: relative;
+      overflow: hidden;
+      border: 1px solid var(--border);
+      border-radius: 24px;
+      background: linear-gradient(135deg, rgba(13, 27, 45, 0.96), rgba(11, 31, 50, 0.88));
+      box-shadow: var(--shadow);
+      padding: 34px;
+    }
+
+    .hero::after {
+      content: "";
+      position: absolute;
+      inset: auto -80px -120px auto;
+      width: 340px;
+      height: 340px;
+      border-radius: 50%;
+      border: 48px solid rgba(69, 230, 255, 0.055);
+    }
+
+    .eyebrow {
+      margin: 0 0 10px;
+      color: var(--cyan);
+      font-size: 0.8rem;
+      font-weight: 800;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+    }
+
+    h1 {
+      margin: 0;
+      max-width: 760px;
+      font-size: clamp(2.2rem, 6vw, 4.8rem);
+      line-height: 0.98;
+      letter-spacing: -0.045em;
+    }
+
+    .hero-copy {
+      max-width: 760px;
+      margin: 18px 0 0;
+      color: var(--muted);
+      font-size: 1.08rem;
+      line-height: 1.7;
+    }
+
+    .flag-example {
+      display: inline-block;
+      margin-top: 16px;
+      padding: 9px 12px;
+      border: 1px solid rgba(114, 242, 166, 0.28);
+      border-radius: 10px;
+      color: var(--green);
+      background: rgba(114, 242, 166, 0.08);
+      font-family: "SFMono-Regular", Consolas, monospace;
+    }
+
+    .hero-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      margin-top: 24px;
+    }
+
+    .btn {
+      min-height: 44px;
+      padding: 11px 16px;
+      border-radius: 11px;
+      font-weight: 800;
+      transition: transform 150ms ease, filter 150ms ease, background 150ms ease;
+    }
+
+    .btn:hover { transform: translateY(-1px); filter: brightness(1.06); }
+    .btn:active { transform: translateY(0); }
+
+    .btn-primary {
+      color: #03121a;
+      background: linear-gradient(135deg, var(--cyan), #7cf4df);
+    }
+
+    .btn-secondary {
+      color: var(--text);
+      background: rgba(255,255,255,0.07);
+      border: 1px solid var(--border);
+    }
+
+    .status-grid {
+      display: grid;
+      grid-template-columns: 1.2fr 1fr 1fr;
+      gap: 14px;
+      margin: 18px 0 30px;
+    }
+
+    .status-card {
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 16px;
+      background: rgba(13, 27, 45, 0.84);
+      box-shadow: 0 10px 32px rgba(0, 0, 0, 0.2);
+    }
+
+    .status-label {
+      color: var(--muted);
+      font-size: 0.78rem;
+      font-weight: 800;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+    }
+
+    .status-value {
+      margin-top: 6px;
+      font-size: 1.65rem;
+      font-weight: 900;
+    }
+
+    .progress-track {
+      height: 12px;
+      margin-top: 12px;
+      overflow: hidden;
+      border-radius: 999px;
+      background: rgba(255,255,255,0.08);
+    }
+
+    .progress-fill {
+      width: 0%;
+      height: 100%;
+      border-radius: inherit;
+      background: linear-gradient(90deg, var(--cyan), var(--green));
+      transition: width 300ms ease;
+    }
+
+    .section-title {
+      display: flex;
+      align-items: end;
+      justify-content: space-between;
+      gap: 12px;
+      margin: 34px 0 16px;
+    }
+
+    .section-title h2 {
+      margin: 0;
+      font-size: 1.8rem;
+    }
+
+    .section-title p {
+      margin: 0;
+      color: var(--muted);
+    }
+
+    .challenge-grid {
+      display: grid;
+      gap: 18px;
+    }
+
+    .challenge {
+      position: relative;
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      background: linear-gradient(180deg, rgba(16, 36, 59, 0.9), rgba(10, 26, 43, 0.94));
+      box-shadow: 0 14px 40px rgba(0,0,0,0.24);
+      padding: 22px;
+    }
+
+    .challenge.solved {
+      border-color: rgba(114, 242, 166, 0.46);
+      box-shadow: 0 14px 40px rgba(38, 190, 105, 0.12);
+    }
+
+    .challenge-head {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 14px;
+    }
+
+    .challenge-number {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      color: var(--cyan);
+      font-size: 0.78rem;
+      font-weight: 900;
+      letter-spacing: 0.11em;
+      text-transform: uppercase;
+    }
+
+    .challenge h3 {
+      margin: 7px 0 4px;
+      font-size: 1.35rem;
+    }
+
+    .challenge p {
+      color: var(--muted);
+      line-height: 1.65;
+    }
+
+    .points {
+      flex: 0 0 auto;
+      padding: 7px 10px;
+      border-radius: 999px;
+      color: var(--yellow);
+      background: rgba(255, 215, 106, 0.1);
+      border: 1px solid rgba(255, 215, 106, 0.2);
+      font-weight: 900;
+      font-size: 0.82rem;
+    }
+
+    .mission-box, .tool-box, .lesson-box {
+      margin: 16px 0;
+      border-radius: 14px;
+      padding: 15px;
+    }
+
+    .mission-box {
+      background: rgba(69, 230, 255, 0.07);
+      border: 1px solid rgba(69, 230, 255, 0.18);
+    }
+
+    .tool-box {
+      background: rgba(255,255,255,0.045);
+      border: 1px solid rgba(255,255,255,0.08);
+    }
+
+    .lesson-box {
+      display: none;
+      background: rgba(114, 242, 166, 0.07);
+      border: 1px solid rgba(114, 242, 166, 0.22);
+    }
+
+    .lesson-box.show { display: block; }
+
+    .lesson-box strong { color: var(--green); }
+
+    .inline-code {
+      color: var(--green);
+      font-family: "SFMono-Regular", Consolas, monospace;
+    }
+
+    .submit-row {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 10px;
+      margin-top: 14px;
+    }
+
+    .flag-input, .text-input, .select-input {
+      width: 100%;
+      min-height: 44px;
+      border: 1px solid rgba(255,255,255,0.13);
+      border-radius: 10px;
+      padding: 10px 12px;
+      color: var(--text);
+      background: rgba(2, 12, 22, 0.7);
+      outline: none;
+    }
+
+    .flag-input:focus, .text-input:focus, .select-input:focus {
+      border-color: rgba(69, 230, 255, 0.7);
+      box-shadow: 0 0 0 3px rgba(69, 230, 255, 0.1);
+    }
+
+    .feedback {
+      min-height: 22px;
+      margin: 9px 0 0;
+      font-weight: 750;
+    }
+
+    .feedback.ok { color: var(--green); }
+    .feedback.error { color: var(--danger); }
+
+    details.hint {
+      margin-top: 12px;
+      border-radius: 11px;
+      background: rgba(255, 215, 106, 0.055);
+      border: 1px solid rgba(255, 215, 106, 0.15);
+      padding: 10px 12px;
+    }
+
+    details.hint summary {
+      color: var(--yellow);
+      font-weight: 850;
+      cursor: pointer;
+    }
+
+    details.hint p { margin-bottom: 4px; }
+
+    .terminal {
+      border: 1px solid rgba(69, 230, 255, 0.2);
+      border-radius: 13px;
+      overflow: hidden;
+      background: #030b12;
+    }
+
+    .terminal-bar {
+      display: flex;
+      align-items: center;
+      gap: 7px;
+      padding: 9px 12px;
+      background: #0b1825;
+      border-bottom: 1px solid rgba(255,255,255,0.08);
+    }
+
+    .dot {
+      width: 9px;
+      height: 9px;
+      border-radius: 50%;
+      background: #ff7a7a;
+    }
+
+    .dot:nth-child(2) { background: #ffd76a; }
+    .dot:nth-child(3) { background: #72f2a6; }
+
+    .terminal-content {
+      min-height: 92px;
+      padding: 14px;
+      color: #8dffbe;
+      font-family: "SFMono-Regular", Consolas, monospace;
+      line-height: 1.55;
+      white-space: pre-wrap;
+    }
+
+    .node-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+
+    .node {
+      min-width: 120px;
+      padding: 13px;
+      border-radius: 12px;
+      color: var(--text);
+      background: #132d45;
+      border: 1px solid rgba(69, 230, 255, 0.2);
+      font-weight: 850;
+    }
+
+    .node.active {
+      color: #031219;
+      background: var(--cyan);
+    }
+
+    .decoder-grid {
+      display: grid;
+      grid-template-columns: 1fr 160px auto;
+      gap: 10px;
+      align-items: end;
+    }
+
+    .field label {
+      display: block;
+      margin-bottom: 7px;
+      color: var(--muted);
+      font-size: 0.85rem;
+      font-weight: 750;
+    }
+
+    .decoded-output {
+      min-height: 46px;
+      margin-top: 10px;
+      padding: 12px;
+      border-radius: 10px;
+      color: var(--green);
+      background: #030b12;
+      border: 1px dashed rgba(114, 242, 166, 0.26);
+      font-family: "SFMono-Regular", Consolas, monospace;
+      word-break: break-word;
+    }
+
+    .login-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr auto;
+      gap: 10px;
+      align-items: end;
+    }
+
+    .sticky-note {
+      transform: rotate(-1.2deg);
+      max-width: 440px;
+      margin: 16px auto;
+      padding: 18px;
+      color: #2c2400;
+      background: #ffe985;
+      border-radius: 4px;
+      box-shadow: 0 12px 24px rgba(0,0,0,0.28);
+      font-family: "Comic Sans MS", "Bradley Hand", cursive;
+      font-weight: 700;
+    }
+
+    .image-card {
+      position: relative;
+      overflow: hidden;
+      min-height: 190px;
+      display: grid;
+      place-items: center;
+      border-radius: 14px;
+      border: 1px solid rgba(255,255,255,0.1);
+      background:
+        linear-gradient(135deg, rgba(69,230,255,.14), rgba(255,122,200,.12)),
+        repeating-linear-gradient(45deg, #0c1c2d, #0c1c2d 16px, #10243b 16px, #10243b 32px);
+    }
+
+    .image-card span {
+      padding: 12px 16px;
+      border-radius: 999px;
+      background: rgba(3, 11, 18, 0.75);
+      border: 1px solid rgba(255,255,255,0.1);
+      font-weight: 900;
+    }
+
+    .description-output {
+      display: none;
+      margin-top: 12px;
+      padding: 13px;
+      border-radius: 10px;
+      background: rgba(255,255,255,0.05);
+      border: 1px solid rgba(255,255,255,0.1);
+    }
+
+    .description-output.show { display: block; }
+
+    .final-card {
+      display: none;
+      margin-top: 24px;
+      padding: 24px;
+      border-radius: 20px;
+      text-align: center;
+      background: linear-gradient(135deg, rgba(114,242,166,.14), rgba(69,230,255,.12));
+      border: 1px solid rgba(114,242,166,.3);
+    }
+
+    .final-card.show { display: block; }
+
+    .final-card h2 {
+      margin: 0 0 8px;
+      font-size: 2rem;
+    }
+
+    .footer {
+      margin-top: 28px;
+      color: var(--muted);
+      text-align: center;
+      font-size: 0.9rem;
+    }
+
+    .confetti {
+      position: fixed;
+      top: -15px;
+      width: 10px;
+      height: 18px;
+      border-radius: 3px;
+      pointer-events: none;
+      animation: fall linear forwards;
+      z-index: 9999;
+    }
+
+    @keyframes fall {
+      to {
+        transform: translate3d(var(--drift), 110vh, 720deg);
+        opacity: 0.9;
+      }
+    }
+
+    @media (max-width: 780px) {
+      .status-grid { grid-template-columns: 1fr; }
+      .decoder-grid, .login-grid { grid-template-columns: 1fr; }
+      .submit-row { grid-template-columns: 1fr; }
+      .hero { padding: 25px; }
+      .challenge { padding: 18px; }
+      .section-title { align-items: flex-start; flex-direction: column; }
+    }
+  </style>
+</head>
+<body>
+  <main class="page-shell">
+    <section class="hero">
+      <p class="eyebrow">Beginner Cybersecurity Challenge</p>
+      <h1>Cyber Quest: The Missing Mascot</h1>
+      <p class="hero-copy">
+        Your school mascot, Byte the Falcon, has vanished from the digital trophy case.
+        Complete five beginner-friendly challenges to trace the clues. No coding or cybersecurity
+        experience is required. Every challenge includes a hint and a short explanation.
+      </p>
+      <div class="flag-example">Flags look like: CTF{words_go_here}</div>
+      <div class="hero-actions">
+        <button class="btn btn-primary" onclick="document.querySelector('#challenges').scrollIntoView()">Start the Mission</button>
+        <button class="btn btn-secondary" onclick="resetProgress()">Reset Progress</button>
+      </div>
+    </section>
+
+    <section class="status-grid" aria-label="CTF progress">
+      <div class="status-card">
+        <div class="status-label">Mission Progress</div>
+        <div class="progress-track"><div class="progress-fill" id="progressFill"></div></div>
+      </div>
+      <div class="status-card">
+        <div class="status-label">Score</div>
+        <div class="status-value"><span id="score">0</span> / 500</div>
+      </div>
+      <div class="status-card">
+        <div class="status-label">Flags Found</div>
+        <div class="status-value"><span id="solvedCount">0</span> / 5</div>
+      </div>
+    </section>
+
+    <div class="section-title" id="challenges">
+      <div>
+        <h2>Mission Challenges</h2>
+        <p>Work from top to bottom. Use the hints whenever you need them.</p>
+      </div>
+    </div>
+
+    <section class="challenge-grid">
+      <article class="challenge" id="challenge-1">
+        <div class="challenge-head">
+          <div>
+            <div class="challenge-number">Challenge 01 · Observation</div>
+            <h3>The Welcome Message</h3>
+          </div>
+          <div class="points">100 points</div>
+        </div>
+        <p>CTFs often begin with a very easy flag so you can learn the submission format.</p>
+        <div class="mission-box">
+          <strong>Mission brief:</strong> The first clue was recovered from the mascot display.
+          It reads: <span class="inline-code">CTF{welcome_detective}</span>
+        </div>
+        <div class="submit-row">
+          <input class="flag-input" id="flag-1" placeholder="Enter the flag exactly as shown" autocomplete="off" />
+          <button class="btn btn-primary" onclick="submitFlag(1)">Submit Flag</button>
+        </div>
+        <div class="feedback" id="feedback-1" aria-live="polite"></div>
+        <details class="hint">
+          <summary>Need a hint?</summary>
+          <p>The flag is already visible in the mission brief. Copy everything from <span class="inline-code">CTF{</span> through the closing brace.</p>
+        </details>
+        <div class="lesson-box" id="lesson-1">
+          <strong>What you learned:</strong> A CTF flag is a special answer string. Capitalization, underscores, and braces usually matter.
+        </div>
+      </article>
+
+      <article class="challenge" id="challenge-2">
+        <div class="challenge-head">
+          <div>
+            <div class="challenge-number">Challenge 02 · Following a Trail</div>
+            <h3>Activate the Network Nodes</h3>
+          </div>
+          <div class="points">100 points</div>
+        </div>
+        <p>Byte left a trail through three network nodes. Activate them in order to reconstruct the message.</p>
+        <div class="tool-box">
+          <div class="node-row">
+            <button class="node" id="node-a" onclick="activateNode('a')">1. Library</button>
+            <button class="node" id="node-b" onclick="activateNode('b')">2. Lab</button>
+            <button class="node" id="node-c" onclick="activateNode('c')">3. Trophy Case</button>
+          </div>
+          <div class="terminal" style="margin-top: 13px;">
+            <div class="terminal-bar"><span class="dot"></span><span class="dot"></span><span class="dot"></span></div>
+            <div class="terminal-content" id="nodeTerminal">Waiting for Node 1...</div>
+          </div>
+        </div>
+        <div class="submit-row">
+          <input class="flag-input" id="flag-2" placeholder="Enter the recovered flag" autocomplete="off" />
+          <button class="btn btn-primary" onclick="submitFlag(2)">Submit Flag</button>
+        </div>
+        <div class="feedback" id="feedback-2" aria-live="polite"></div>
+        <details class="hint">
+          <summary>Need a hint?</summary>
+          <p>Click the buttons from left to right. The final node displays the complete flag.</p>
+        </details>
+        <div class="lesson-box" id="lesson-2">
+          <strong>What you learned:</strong> Many CTF challenges involve following clues and paying attention to the order of events.
+        </div>
+      </article>
+
+      <article class="challenge" id="challenge-3">
+        <div class="challenge-head">
+          <div>
+            <div class="challenge-number">Challenge 03 · Decoding</div>
+            <h3>The Shifted Signal</h3>
+          </div>
+          <div class="points">100 points</div>
+        </div>
+        <p>
+          The recovered radio signal was shifted three letters forward in the alphabet.
+          Use the built-in decoder to shift it back.
+        </p>
+        <div class="tool-box">
+          <div class="decoder-grid">
+            <div class="field">
+              <label for="cipherText">Encoded message</label>
+              <input class="text-input" id="cipherText" value="FWI{VKLIW_WKUHH}" />
+            </div>
+            <div class="field">
+              <label for="shiftAmount">Shift backward</label>
+              <select class="select-input" id="shiftAmount">
+                <option value="1">1 letter</option>
+                <option value="2">2 letters</option>
+                <option value="3">3 letters</option>
+                <option value="4">4 letters</option>
+                <option value="5">5 letters</option>
+              </select>
+            </div>
+            <button class="btn btn-secondary" onclick="decodeMessage()">Decode</button>
+          </div>
+          <div class="decoded-output" id="decodedOutput">Decoded text will appear here.</div>
+        </div>
+        <div class="submit-row">
+          <input class="flag-input" id="flag-3" placeholder="Enter the decoded flag" autocomplete="off" />
+          <button class="btn btn-primary" onclick="submitFlag(3)">Submit Flag</button>
+        </div>
+        <div class="feedback" id="feedback-3" aria-live="polite"></div>
+        <details class="hint">
+          <summary>Need a hint?</summary>
+          <p>Select <strong>3 letters</strong>, then press Decode.</p>
+        </details>
+        <div class="lesson-box" id="lesson-3">
+          <strong>What you learned:</strong> A Caesar cipher replaces each letter with another letter a fixed distance away in the alphabet.
+        </div>
+      </article>
+
+      <article class="challenge" id="challenge-4">
+        <div class="challenge-head">
+          <div>
+            <div class="challenge-number">Challenge 04 · Password Awareness</div>
+            <h3>The Careless Login</h3>
+          </div>
+          <div class="points">100 points</div>
+        </div>
+        <p>A staff member left a very obvious reminder beside the mascot control panel. Use it to sign in.</p>
+        <div class="sticky-note">
+          Temporary mascot account<br><br>
+          Username: guest<br>
+          Password: falcon2026<br><br>
+          Please remove this note later!
+        </div>
+        <div class="tool-box">
+          <div class="login-grid">
+            <div class="field">
+              <label for="username">Username</label>
+              <input class="text-input" id="username" autocomplete="off" />
+            </div>
+            <div class="field">
+              <label for="password">Password</label>
+              <input class="text-input" id="password" type="password" autocomplete="off" />
+            </div>
+            <button class="btn btn-secondary" onclick="attemptLogin()">Sign In</button>
+          </div>
+          <div class="feedback" id="loginFeedback" aria-live="polite"></div>
+        </div>
+        <div class="submit-row">
+          <input class="flag-input" id="flag-4" placeholder="Enter the flag shown after login" autocomplete="off" />
+          <button class="btn btn-primary" onclick="submitFlag(4)">Submit Flag</button>
+        </div>
+        <div class="feedback" id="feedback-4" aria-live="polite"></div>
+        <details class="hint">
+          <summary>Need a hint?</summary>
+          <p>Use the exact username and password written on the yellow note.</p>
+        </details>
+        <div class="lesson-box" id="lesson-4">
+          <strong>What you learned:</strong> Writing passwords on notes or using predictable passwords makes accounts easy to compromise.
+        </div>
+      </article>
+
+      <article class="challenge" id="challenge-5">
+        <div class="challenge-head">
+          <div>
+            <div class="challenge-number">Challenge 05 · Accessibility Clues</div>
+            <h3>The Image Description</h3>
+          </div>
+          <div class="points">100 points</div>
+        </div>
+        <p>
+          Images on websites can include text descriptions for people using screen readers.
+          The final clue is inside the description for this damaged camera image.
+        </p>
+        <div class="tool-box">
+          <div class="image-card" role="img" aria-label="Security camera still showing an empty hallway. Recovery code: CTF{accessibility_matters}">
+            <span>Damaged Security Camera Image</span>
+          </div>
+          <button class="btn btn-secondary" style="margin-top: 12px;" onclick="showDescription()">Show Image Description</button>
+          <div class="description-output" id="descriptionOutput">
+            Security camera still showing an empty hallway. Recovery code:
+            <span class="inline-code">CTF{accessibility_matters}</span>
+          </div>
+        </div>
+        <div class="submit-row">
+          <input class="flag-input" id="flag-5" placeholder="Enter the recovery flag" autocomplete="off" />
+          <button class="btn btn-primary" onclick="submitFlag(5)">Submit Flag</button>
+        </div>
+        <div class="feedback" id="feedback-5" aria-live="polite"></div>
+        <details class="hint">
+          <summary>Need a hint?</summary>
+          <p>Press the button below the image to reveal its description.</p>
+        </details>
+        <div class="lesson-box" id="lesson-5">
+          <strong>What you learned:</strong> Alternative text helps make websites usable for more people and can also contain useful context.
+        </div>
+      </article>
+    </section>
+
+    <section class="final-card" id="finalCard">
+      <h2>Mission Complete!</h2>
+      <p>You found Byte the Falcon and completed your first CTF.</p>
+      <div class="flag-example">Final achievement: CTF{first_ctf_complete}</div>
+    </section>
+
+    <footer class="footer">
+      Designed as a safe, no-experience-required introduction to capture-the-flag challenges.
+    </footer>
+  </main>
+
+  <script>
+    const flags = {
+      1: "CTF{welcome_detective}",
+      2: "CTF{follow_the_trail}",
+      3: "CTF{SHIFT_THREE}",
+      4: "CTF{sticky_notes_are_risky}",
+      5: "CTF{accessibility_matters}"
+    };
+
+    const storageKey = "firstTimerCtfSolved";
+    let solved = JSON.parse(localStorage.getItem(storageKey) || "[]");
+    let nodeStep = 0;
+
+    function normalize(value) {
+      return value.trim();
+    }
+
+    function submitFlag(number) {
+      const input = document.getElementById(`flag-${number}`);
+      const feedback = document.getElementById(`feedback-${number}`);
+      const answer = normalize(input.value);
+
+      if (answer === flags[number]) {
+        if (!solved.includes(number)) {
+          solved.push(number);
+          solved.sort((a, b) => a - b);
+          localStorage.setItem(storageKey, JSON.stringify(solved));
+        }
+        feedback.textContent = "Correct! Flag accepted.";
+        feedback.className = "feedback ok";
+        document.getElementById(`challenge-${number}`).classList.add("solved");
+        document.getElementById(`lesson-${number}`).classList.add("show");
+        input.disabled = true;
+        updateProgress();
+      } else {
+        feedback.textContent = "Not quite. Check spelling, capitalization, underscores, and braces.";
+        feedback.className = "feedback error";
+      }
+    }
+
+    function updateProgress() {
+      solved = [...new Set(solved.filter(n => n >= 1 && n <= 5))];
+      document.getElementById("score").textContent = solved.length * 100;
+      document.getElementById("solvedCount").textContent = solved.length;
+      document.getElementById("progressFill").style.width = `${solved.length * 20}%`;
+
+      for (const number of solved) {
+        const challenge = document.getElementById(`challenge-${number}`);
+        const lesson = document.getElementById(`lesson-${number}`);
+        const input = document.getElementById(`flag-${number}`);
+        const feedback = document.getElementById(`feedback-${number}`);
+        challenge.classList.add("solved");
+        lesson.classList.add("show");
+        input.value = flags[number];
+        input.disabled = true;
+        feedback.textContent = "Correct! Flag accepted.";
+        feedback.className = "feedback ok";
+      }
+
+      if (solved.length === 5) {
+        document.getElementById("finalCard").classList.add("show");
+        launchConfetti();
+      } else {
+        document.getElementById("finalCard").classList.remove("show");
+      }
+    }
+
+    function activateNode(node) {
+      const terminal = document.getElementById("nodeTerminal");
+      const order = ["a", "b", "c"];
+      const messages = [
+        "Node 1 online.\nPartial message: CTF{follow_",
+        "Node 2 online.\nPartial message: CTF{follow_the_",
+        "Node 3 online.\nRecovered flag: CTF{follow_the_trail}"
+      ];
+
+      if (node !== order[nodeStep]) {
+        terminal.textContent = `Wrong order. Activate Node ${nodeStep + 1} next.`;
+        return;
+      }
+
+      document.getElementById(`node-${node}`).classList.add("active");
+      terminal.textContent = messages[nodeStep];
+      nodeStep++;
+
+      if (nodeStep === 3) nodeStep = 0;
+    }
+
+    function decodeMessage() {
+      const text = document.getElementById("cipherText").value;
+      const shift = Number(document.getElementById("shiftAmount").value);
+      const output = text.replace(/[A-Za-z]/g, char => {
+        const base = char >= "a" && char <= "z" ? 97 : 65;
+        return String.fromCharCode((char.charCodeAt(0) - base - shift + 26) % 26 + base);
+      });
+      document.getElementById("decodedOutput").textContent = output;
+    }
+
+    function attemptLogin() {
+      const username = document.getElementById("username").value.trim();
+      const password = document.getElementById("password").value;
+      const feedback = document.getElementById("loginFeedback");
+
+      if (username === "guest" && password === "falcon2026") {
+        feedback.textContent = "Login successful. Flag: CTF{sticky_notes_are_risky}";
+        feedback.className = "feedback ok";
+      } else {
+        feedback.textContent = "Login failed. Use the exact information from the sticky note.";
+        feedback.className = "feedback error";
+      }
+    }
+
+    function showDescription() {
+      document.getElementById("descriptionOutput").classList.add("show");
+    }
+
+    function resetProgress() {
+      localStorage.removeItem(storageKey);
+      solved = [];
+      nodeStep = 0;
+      location.reload();
+    }
+
+    function launchConfetti() {
+      if (document.body.dataset.celebrated === "true") return;
+      document.body.dataset.celebrated = "true";
+
+      const colors = ["#45e6ff", "#72f2a6", "#ffd76a", "#ff7ac8", "#ffffff"];
+      for (let i = 0; i < 70; i++) {
+        const piece = document.createElement("div");
+        piece.className = "confetti";
+        piece.style.left = `${Math.random() * 100}vw`;
+        piece.style.background = colors[Math.floor(Math.random() * colors.length)];
+        piece.style.setProperty("--drift", `${(Math.random() - 0.5) * 260}px`);
+        piece.style.animationDuration = `${2.7 + Math.random() * 2.2}s`;
+        piece.style.animationDelay = `${Math.random() * 0.8}s`;
+        document.body.appendChild(piece);
+        setTimeout(() => piece.remove(), 6000);
+      }
+    }
+
+    updateProgress();
+  </script>
+</body>
+</html>
